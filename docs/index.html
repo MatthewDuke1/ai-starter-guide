@@ -22,6 +22,19 @@
     }
     .hero p { font-size: 18px; color: #a1a1aa; max-width: 500px; margin: 16px auto 0; }
 
+    /* Refresh */
+    .refresh-bar { display: flex; justify-content: center; padding: 20px 0 0; }
+    .refresh-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #18181b; border: 1px solid #27272a; color: #a78bfa;
+      padding: 10px 24px; border-radius: 40px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.25s; font-family: inherit;
+    }
+    .refresh-btn:hover { border-color: #a78bfa; background: #1e1e21; }
+    .refresh-btn svg { transition: transform 0.4s; }
+    .refresh-btn:active svg { transform: rotate(180deg); }
+    .refresh-label { font-size: 12px; color: #52525b; text-align: center; margin-top: 6px; }
+
     .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
 
     /* Back button */
@@ -108,93 +121,14 @@
 
     <!-- Goal Selection -->
     <div class="goals" id="goals">
-      <div class="goal-grid">
-
-        <div class="goal-card" onclick="showTools('automate')">
-          <div class="goal-emoji">&#9889;</div>
-          <h3>Automate repetitive tasks</h3>
-          <p>Stop doing the same thing over and over. Let AI handle workflows, emails, data entry, and scheduling.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('build')">
-          <div class="goal-emoji">&#128187;</div>
-          <h3>Build a website or app</h3>
-          <p>Go from idea to working product without years of coding experience. AI writes the code for you.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('write')">
-          <div class="goal-emoji">&#9997;&#65039;</div>
-          <h3>Write content or copy</h3>
-          <p>Blog posts, marketing copy, emails, social media, reports -- draft and polish anything with AI.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('images')">
-          <div class="goal-emoji">&#127912;</div>
-          <h3>Create images or designs</h3>
-          <p>Generate product photos, logos, social graphics, concept art, and illustrations from text descriptions.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('video')">
-          <div class="goal-emoji">&#127909;</div>
-          <h3>Create videos</h3>
-          <p>Generate, edit, and enhance video content. AI avatars, text-to-video, and automated editing.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('data')">
-          <div class="goal-emoji">&#128202;</div>
-          <h3>Analyze data</h3>
-          <p>Upload spreadsheets, ask questions in plain English, and get charts, insights, and summaries back.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('code')">
-          <div class="goal-emoji">&#128296;</div>
-          <h3>Code faster</h3>
-          <p>Autocomplete, debug, refactor, and generate code across any language. Pair program with AI.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('research')">
-          <div class="goal-emoji">&#128270;</div>
-          <h3>Research anything</h3>
-          <p>Get answers with sources, summarize papers, explore topics in depth. AI-powered search that actually understands you.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('agents')">
-          <div class="goal-emoji">&#129302;</div>
-          <h3>Build AI agents</h3>
-          <p>Create autonomous agents that can browse, code, email, and complete multi-step tasks on their own.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('audio')">
-          <div class="goal-emoji">&#127911;</div>
-          <h3>Create music or audio</h3>
-          <p>Generate songs, clone voices, create podcasts, and produce sound effects from text prompts.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('learn')">
-          <div class="goal-emoji">&#127891;</div>
-          <h3>Learn something new</h3>
-          <p>AI tutors that adapt to your level. Upload notes, textbooks, or lectures and have a conversation about them.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
-        <div class="goal-card" onclick="showTools('productivity')">
-          <div class="goal-emoji">&#128640;</div>
-          <h3>Boost daily productivity</h3>
-          <p>AI for your inbox, calendar, meeting notes, and task management. Reclaim hours every week.</p>
-          <span class="arrow">&rarr;</span>
-        </div>
-
+      <div class="goal-grid" id="goal-grid"></div>
+      <div class="refresh-bar">
+        <button class="refresh-btn" onclick="refreshGoals()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          Refresh
+        </button>
       </div>
+      <div class="refresh-label" id="page-label"></div>
     </div>
 
     <!-- Tool Results (hidden by default) -->
@@ -384,6 +318,76 @@ function showGoals() {
   document.getElementById('results').classList.remove('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// Goal pages for cycling
+const GOAL_PAGES = [
+  [
+    { key: "automate", emoji: "&#9889;", title: "Automate repetitive tasks", desc: "Stop doing the same thing over and over. Let AI handle workflows, emails, data entry, and scheduling." },
+    { key: "build", emoji: "&#128187;", title: "Build a website or app", desc: "Go from idea to working product without years of coding experience. AI writes the code for you." },
+    { key: "write", emoji: "&#9997;&#65039;", title: "Write content or copy", desc: "Blog posts, marketing copy, emails, social media, reports -- draft and polish anything with AI." },
+    { key: "images", emoji: "&#127912;", title: "Create images or designs", desc: "Generate product photos, logos, social graphics, concept art, and illustrations from text descriptions." },
+    { key: "video", emoji: "&#127909;", title: "Create videos", desc: "Generate, edit, and enhance video content. AI avatars, text-to-video, and automated editing." },
+    { key: "data", emoji: "&#128202;", title: "Analyze data", desc: "Upload spreadsheets, ask questions in plain English, and get charts, insights, and summaries back." },
+  ],
+  [
+    { key: "code", emoji: "&#128296;", title: "Code faster", desc: "Autocomplete, debug, refactor, and generate code across any language. Pair program with AI." },
+    { key: "research", emoji: "&#128270;", title: "Research anything", desc: "Get answers with sources, summarize papers, explore topics in depth. AI-powered search that understands you." },
+    { key: "agents", emoji: "&#129302;", title: "Build AI agents", desc: "Create autonomous agents that can browse, code, email, and complete multi-step tasks on their own." },
+    { key: "audio", emoji: "&#127911;", title: "Create music or audio", desc: "Generate songs, clone voices, create podcasts, and produce sound effects from text prompts." },
+    { key: "learn", emoji: "&#127891;", title: "Learn something new", desc: "AI tutors that adapt to your level. Upload notes, textbooks, or lectures and have a conversation about them." },
+    { key: "productivity", emoji: "&#128640;", title: "Boost daily productivity", desc: "AI for your inbox, calendar, meeting notes, and task management. Reclaim hours every week." },
+  ],
+  [
+    { key: "automate", emoji: "&#128231;", title: "Automate your inbox", desc: "Sort, draft replies, and manage email overload. AI reads, prioritizes, and handles the boring stuff." },
+    { key: "build", emoji: "&#128241;", title: "Build a mobile app", desc: "Cross-platform iOS and Android apps from a description. React Native, Flutter, or native -- AI handles the code." },
+    { key: "images", emoji: "&#128247;", title: "Edit photos with AI", desc: "Remove backgrounds, upscale, retouch, expand, and restyle photos. Professional edits in seconds." },
+    { key: "write", emoji: "&#128218;", title: "Summarize documents", desc: "Drop in a 100-page PDF and get a 1-page summary. Pull out key points, action items, and decisions." },
+    { key: "data", emoji: "&#129516;", title: "Clean messy data", desc: "Fix formatting, deduplicate, fill gaps, and normalize inconsistent data. AI does the tedious cleanup." },
+    { key: "code", emoji: "&#128027;", title: "Debug code", desc: "Paste an error, get the fix. AI reads stack traces, finds root causes, and suggests patches across your codebase." },
+  ],
+  [
+    { key: "video", emoji: "&#127916;", title: "Generate short-form content", desc: "Turn long videos into TikToks, Reels, and Shorts. AI picks the best moments and adds captions." },
+    { key: "research", emoji: "&#128200;", title: "Competitive analysis", desc: "Research competitors, compare features, analyze pricing, and generate strategy reports. AI does the legwork." },
+    { key: "agents", emoji: "&#129302;", title: "Personal AI assistant", desc: "An agent that checks your email, updates your calendar, drafts messages, and briefs you every morning." },
+    { key: "audio", emoji: "&#127908;", title: "Clone your voice", desc: "Create a digital twin of your voice from a short sample. Use it for podcasts, audiobooks, or automated content." },
+    { key: "learn", emoji: "&#129504;", title: "Practice for interviews", desc: "AI mock interviews with real-time feedback. Technical, behavioral, and case -- tailored to the company and role." },
+    { key: "productivity", emoji: "&#128466;", title: "Automate meeting notes", desc: "AI joins your calls, transcribes everything, extracts action items, and sends a summary to your team." },
+  ],
+];
+
+let currentPage = 0;
+
+function renderGoals() {
+  const grid = document.getElementById('goal-grid');
+  const page = GOAL_PAGES[currentPage];
+  const label = document.getElementById('page-label');
+
+  grid.style.opacity = '0';
+  grid.style.transform = 'translateY(10px)';
+
+  setTimeout(() => {
+    grid.innerHTML = page.map(g => `
+      <div class="goal-card" onclick="showTools('${g.key}')">
+        <div class="goal-emoji">${g.emoji}</div>
+        <h3>${g.title}</h3>
+        <p>${g.desc}</p>
+        <span class="arrow">&rarr;</span>
+      </div>
+    `).join('');
+    label.textContent = `${currentPage + 1} of ${GOAL_PAGES.length}`;
+    grid.style.transition = 'opacity 0.3s, transform 0.3s';
+    grid.style.opacity = '1';
+    grid.style.transform = 'translateY(0)';
+  }, 150);
+}
+
+function refreshGoals() {
+  currentPage = (currentPage + 1) % GOAL_PAGES.length;
+  renderGoals();
+}
+
+// Initial render
+renderGoals();
 </script>
 </body>
 </html>
