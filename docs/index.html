@@ -22,18 +22,6 @@
     }
     .hero p { font-size: 18px; color: #a1a1aa; max-width: 500px; margin: 16px auto 0; }
 
-    /* Refresh */
-    .refresh-bar { display: flex; justify-content: center; padding: 20px 0 0; }
-    .refresh-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: #18181b; border: 1px solid #27272a; color: #a78bfa;
-      padding: 10px 24px; border-radius: 40px; font-size: 14px; font-weight: 600;
-      cursor: pointer; transition: all 0.25s; font-family: inherit;
-    }
-    .refresh-btn:hover { border-color: #a78bfa; background: #1e1e21; }
-    .refresh-btn svg { transition: transform 0.4s; }
-    .refresh-btn:active svg { transform: rotate(180deg); }
-    .refresh-label { font-size: 12px; color: #52525b; text-align: center; margin-top: 6px; }
 
     .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
 
@@ -330,22 +318,28 @@ const TOOLS = {
 // Track which alternate set is showing per category
 const altIndex = {};
 
-function showTools(goalKey, altSet) {
+function showTools(goalKey) {
   const goal = TOOLS[goalKey];
   const alts = ALT_TOOLS[goalKey];
   const goalsEl = document.getElementById('goals');
   const resultsEl = document.getElementById('results');
 
-  if (altSet === undefined) altIndex[goalKey] = 0;
-  const idx = altIndex[goalKey] || 0;
-  const tools = idx === 0 ? goal.tools : alts[idx - 1];
-  const totalSets = 1 + (alts ? alts.length : 0);
+  // Combine all tools from primary + alternate sets, dedupe by name
+  const seen = new Set();
+  const allTools = [];
+  const addTools = (list) => {
+    list.forEach(t => {
+      if (!seen.has(t.name)) { seen.add(t.name); allTools.push(t); }
+    });
+  };
+  addTools(goal.tools);
+  if (alts) alts.forEach(set => addTools(set));
 
   let html = `
     <button class="back-btn" onclick="showGoals()">&#8592; Back to all goals</button>
     <div class="results-header">
       <h2>${goal.title}</h2>
-      <p>${goal.subtitle}</p>
+      <p>${goal.subtitle} <span style="color:#52525b;font-size:13px;">(${allTools.length} tools)</span></p>
     </div>
     <div class="filter-bar">
       <span class="filter-label">Filter:</span>
@@ -358,8 +352,8 @@ function showTools(goalKey, altSet) {
     <div class="tool-list" id="tool-list">
   `;
 
-  tools.forEach((t, i) => {
-    const uid = goalKey + '_' + idx + '_' + i;
+  allTools.forEach((t, i) => {
+    const uid = goalKey + '_' + i;
     const articleHtml = t.article ? `<p>${t.article}</p>` : '';
     const promoHtml = t.promo ? `<div class="promo-box"><strong>Current offer:</strong> ${t.promo}</div>` : '';
     const diffHtml = t.diff ? `<div class="diff-box"><strong>What makes it stand out:</strong><ul>${t.diff.map(d => '<li>' + d + '</li>').join('')}</ul></div>` : '';
@@ -398,30 +392,10 @@ function showTools(goalKey, altSet) {
   });
 
   html += '</div>';
-
-  if (totalSets > 1) {
-    html += `
-      <div class="refresh-bar">
-        <button class="refresh-btn" onclick="refreshTools('${goalKey}')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          Show me different options
-        </button>
-      </div>
-      <div class="refresh-label">${idx + 1} of ${totalSets} sets</div>
-    `;
-  }
-
   resultsEl.innerHTML = html;
   goalsEl.style.display = 'none';
   resultsEl.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function refreshTools(goalKey) {
-  const alts = ALT_TOOLS[goalKey];
-  const totalSets = 1 + (alts ? alts.length : 0);
-  altIndex[goalKey] = ((altIndex[goalKey] || 0) + 1) % totalSets;
-  showTools(goalKey, altIndex[goalKey]);
 }
 
 function applyFilter(filter, btn) {
@@ -454,7 +428,7 @@ function applyFilter(filter, btn) {
       msg.style.cssText = 'text-align:center;padding:40px 0;color:#52525b;font-size:14px;';
       document.getElementById('tool-list').appendChild(msg);
     }
-    msg.textContent = 'No tools match this filter. Try "All" or click Refresh for more options.';
+    msg.textContent = 'No tools match this filter in this category.';
     msg.style.display = '';
   } else if (msg) {
     msg.style.display = 'none';
