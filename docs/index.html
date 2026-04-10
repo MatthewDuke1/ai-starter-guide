@@ -392,6 +392,7 @@ function showTools(goalKey) {
   });
 
   html += '</div>';
+  html += `<div style="text-align:center;padding:40px 0 20px;"><button class="back-btn" onclick="showGoals()" style="font-size:16px;padding:12px 32px;border:1px solid #27272a;border-radius:40px;background:#18181b;color:#a78bfa;cursor:pointer;transition:all 0.2s;font-family:inherit;font-weight:600;" onmouseover="this.style.borderColor='#a78bfa'" onmouseout="this.style.borderColor='#27272a'">&#8592; Take me home</button></div>`;
   resultsEl.innerHTML = html;
   goalsEl.style.display = 'none';
   resultsEl.classList.add('active');
