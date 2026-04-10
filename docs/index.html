@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Starter Guide - What's your goal?</title>
+  <meta name="description" content="Don't know where to start with AI? Pick your goal and discover the best tools to get there." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #0a0a0a; color: #fafafa; line-height: 1.6; min-height: 100vh; }
+
+    /* Hero */
+    .hero {
+      text-align: center; padding: 80px 20px 40px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.12) 0%, transparent 60%);
+    }
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { font-size: 18px; color: #a1a1aa; max-width: 500px; margin: 16px auto 0; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+    /* Back button */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px; color: #a78bfa;
+      font-size: 14px; font-weight: 600; cursor: pointer; padding: 8px 0; margin-bottom: 16px;
+      background: none; border: none; transition: color 0.2s;
+    }
+    .back-btn:hover { color: #c4b5fd; }
+
+    /* Goal Grid */
+    .goals { padding: 20px 0 60px; }
+    .goal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .goal-card {
+      background: #111113; border: 1px solid #27272a; border-radius: 14px;
+      padding: 28px 24px; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+    }
+    .goal-card:hover { border-color: #a78bfa; transform: translateY(-2px); }
+    .goal-card:active { transform: translateY(0); }
+    .goal-emoji { font-size: 32px; margin-bottom: 12px; }
+    .goal-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .goal-card p { font-size: 13px; color: #71717a; line-height: 1.5; }
+    .goal-card .arrow { position: absolute; top: 28px; right: 24px; color: #3f3f46; font-size: 20px; transition: color 0.2s; }
+    .goal-card:hover .arrow { color: #a78bfa; }
+
+    /* Tool Results */
+    .results { padding: 0 0 60px; display: none; }
+    .results.active { display: block; }
+    .results-header { margin-bottom: 24px; }
+    .results-header h2 { font-size: 28px; font-weight: 700; }
+    .results-header p { font-size: 15px; color: #71717a; margin-top: 4px; }
+
+    .tool-list { display: flex; flex-direction: column; gap: 16px; }
+    .tool-card {
+      background: #111113; border: 1px solid #27272a; border-radius: 12px;
+      padding: 24px; display: flex; gap: 20px; align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+    .tool-card:hover { border-color: #3f3f46; }
+    .tool-icon {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 22px;
+    }
+    .tool-info { flex: 1; }
+    .tool-info h4 { font-size: 17px; font-weight: 700; }
+    .tool-info .tool-tagline { font-size: 14px; color: #a1a1aa; margin-top: 4px; }
+    .tool-info .tool-desc { font-size: 13px; color: #71717a; margin-top: 8px; line-height: 1.6; }
+    .tool-meta { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .tool-tag {
+      font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+    }
+    .tag-free { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+    .tag-paid { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+    .tag-beginner { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+    .tag-intermediate { background: rgba(168,85,247,0.1); color: #a78bfa; border: 1px solid rgba(168,85,247,0.2); }
+    .tag-advanced { background: rgba(244,63,94,0.1); color: #fb7185; border: 1px solid rgba(244,63,94,0.2); }
+    .tag-open-source { background: rgba(45,212,191,0.1); color: #2dd4bf; border: 1px solid rgba(45,212,191,0.2); }
+    .try-btn {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+      background: #a78bfa; color: #0a0a0a; border: none; padding: 8px 18px;
+      border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .try-btn:hover { background: #c4b5fd; }
+
+    /* Footer */
+    .footer { padding: 40px 20px; text-align: center; border-top: 1px solid #18181b; color: #3f3f46; font-size: 13px; }
+    .footer a { color: #a78bfa; text-decoration: none; }
+
+    @media (max-width: 640px) {
+      .goal-grid { grid-template-columns: 1fr; }
+      .tool-card { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <h1>What is your goal?</h1>
+    <p>Pick what you're trying to do. We'll show you exactly which AI tools to use and how to start.</p>
+  </div>
+
+  <div class="container">
+
+    <!-- Goal Selection -->
+    <div class="goals" id="goals">
+      <div class="goal-grid">
+
+        <div class="goal-card" onclick="showTools('automate')">
+          <div class="goal-emoji">&#9889;</div>
+          <h3>Automate repetitive tasks</h3>
+          <p>Stop doing the same thing over and over. Let AI handle workflows, emails, data entry, and scheduling.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('build')">
+          <div class="goal-emoji">&#128187;</div>
+          <h3>Build a website or app</h3>
+          <p>Go from idea to working product without years of coding experience. AI writes the code for you.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('write')">
+          <div class="goal-emoji">&#9997;&#65039;</div>
+          <h3>Write content or copy</h3>
+          <p>Blog posts, marketing copy, emails, social media, reports -- draft and polish anything with AI.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('images')">
+          <div class="goal-emoji">&#127912;</div>
+          <h3>Create images or designs</h3>
+          <p>Generate product photos, logos, social graphics, concept art, and illustrations from text descriptions.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('video')">
+          <div class="goal-emoji">&#127909;</div>
+          <h3>Create videos</h3>
+          <p>Generate, edit, and enhance video content. AI avatars, text-to-video, and automated editing.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('data')">
+          <div class="goal-emoji">&#128202;</div>
+          <h3>Analyze data</h3>
+          <p>Upload spreadsheets, ask questions in plain English, and get charts, insights, and summaries back.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('code')">
+          <div class="goal-emoji">&#128296;</div>
+          <h3>Code faster</h3>
+          <p>Autocomplete, debug, refactor, and generate code across any language. Pair program with AI.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('research')">
+          <div class="goal-emoji">&#128270;</div>
+          <h3>Research anything</h3>
+          <p>Get answers with sources, summarize papers, explore topics in depth. AI-powered search that actually understands you.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('agents')">
+          <div class="goal-emoji">&#129302;</div>
+          <h3>Build AI agents</h3>
+          <p>Create autonomous agents that can browse, code, email, and complete multi-step tasks on their own.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('audio')">
+          <div class="goal-emoji">&#127911;</div>
+          <h3>Create music or audio</h3>
+          <p>Generate songs, clone voices, create podcasts, and produce sound effects from text prompts.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('learn')">
+          <div class="goal-emoji">&#127891;</div>
+          <h3>Learn something new</h3>
+          <p>AI tutors that adapt to your level. Upload notes, textbooks, or lectures and have a conversation about them.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+        <div class="goal-card" onclick="showTools('productivity')">
+          <div class="goal-emoji">&#128640;</div>
+          <h3>Boost daily productivity</h3>
+          <p>AI for your inbox, calendar, meeting notes, and task management. Reclaim hours every week.</p>
+          <span class="arrow">&rarr;</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tool Results (hidden by default) -->
+    <div class="results" id="results"></div>
+  </div>
+
+  <div class="footer">
+    <p>Built by <a href="https://www.linkedin.com/in/the-duke/" target="_blank">Matt Duke</a> &mdash; <a href="https://matthewduke1.github.io/ai-portfolio/">Portfolio</a> &mdash; <a href="https://github.com/MatthewDuke1/ai-starter-guide">Source</a></p>
+    <p style="margin-top:6px;">Tools and pricing current as of April 2026. Landscape changes fast -- verify before committing.</p>
+  </div>
+
+<script>
+const TOOLS = {
+  automate: {
+    title: "Automate Repetitive Tasks",
+    subtitle: "Connect apps, trigger workflows, and eliminate manual busywork.",
+    tools: [
+      { name: "Zapier", tagline: "Connect 7,000+ apps with no code", desc: "The most popular automation platform. 'When X happens in App A, do Y in App B.' Drag-and-drop builder with AI-powered suggestions for workflow creation.", url: "https://zapier.com", icon: "&#9889;", bg: "#ff4f00", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Make (Integromat)", tagline: "Visual automation for complex workflows", desc: "More powerful than Zapier for multi-step logic. Visual canvas where you connect modules. Better for branching, loops, and data transformation.", url: "https://make.com", icon: "&#9881;", bg: "#6d28d9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "n8n", tagline: "Open-source workflow automation you can self-host", desc: "Like Zapier but open-source. Self-host for free or use their cloud. Full code access when you need it. Great for developers who want control.", url: "https://n8n.io", icon: "&#128279;", bg: "#ea4b71", tags: ["tag-open-source", "Open Source"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "OpenClaw", tagline: "AI-native automation platform", desc: "Next-generation automation built around AI agents. Define goals in natural language and OpenClaw figures out the steps. Emerging tool worth watching.", url: "https://openclaw.com", icon: "&#129470;", bg: "#0ea5e9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Bardeen", tagline: "Automate browser tasks with AI", desc: "Chrome extension that automates anything you do in a browser -- scraping, form filling, data extraction. AI suggests automations based on your habits.", url: "https://bardeen.ai", icon: "&#127760;", bg: "#8b5cf6", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  build: {
+    title: "Build a Website or App",
+    subtitle: "Go from idea to deployed product. AI writes the code, you steer the direction.",
+    tools: [
+      { name: "Claude Code", tagline: "AI pair programmer in your terminal", desc: "Anthropic's CLI tool. Reads your codebase, writes features, fixes bugs, creates PRs. Handles full-stack development across any framework. Used to build entire production apps.", url: "https://claude.ai/code", icon: "&#129302;", bg: "#d97706", tags: ["tag-paid", "Paid"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "Bolt.new", tagline: "Describe an app, get a working prototype instantly", desc: "Type what you want in plain English. Bolt generates a full-stack app in seconds with live preview. Deploy to the web in one click. Zero setup required.", url: "https://bolt.new", icon: "&#9889;", bg: "#0ea5e9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Cursor", tagline: "VS Code fork with AI built into every keystroke", desc: "The most popular AI code editor. Tab-complete entire functions, chat with your codebase, apply multi-file changes. Feels like pair programming with a senior developer.", url: "https://cursor.com", icon: "&#128187;", bg: "#18181b", tags: ["tag-free", "Free tier"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "v0 by Vercel", tagline: "Generate React UI components from text", desc: "Describe a component ('a pricing table with 3 tiers') and v0 generates production-ready React + Tailwind code. Iterate by chatting. Copy-paste into your project.", url: "https://v0.dev", icon: "&#9650;", bg: "#000", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Lovable", tagline: "Full-stack app builder from natural language", desc: "Describe your app idea, Lovable generates the entire thing -- frontend, backend, database, auth. Connect to Supabase for persistence. Ship to production from the browser.", url: "https://lovable.dev", icon: "&#128156;", bg: "#ec4899", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Replit Agent", tagline: "AI builds and deploys your app end-to-end", desc: "Describe what you want, Agent creates the project, writes code, installs packages, and deploys it. Fully hosted -- no local setup needed. Good for prototyping.", url: "https://replit.com", icon: "&#128296;", bg: "#f97316", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  write: {
+    title: "Write Content or Copy",
+    subtitle: "Draft, edit, and polish any kind of written content.",
+    tools: [
+      { name: "Claude", tagline: "Thoughtful, nuanced writing with long context", desc: "Best for long-form content, technical writing, and tasks that need careful reasoning. Can process entire books, codebases, or document sets in a single conversation.", url: "https://claude.ai", icon: "&#129302;", bg: "#d97706", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "ChatGPT", tagline: "The most widely used AI assistant", desc: "Versatile writing assistant for any content type. Supports image input, web browsing, file analysis. Huge plugin ecosystem. The default starting point for most people.", url: "https://chat.openai.com", icon: "&#128172;", bg: "#10a37f", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Jasper", tagline: "AI marketing copy at scale", desc: "Purpose-built for marketing teams. Templates for ads, landing pages, product descriptions, social posts. Brand voice training. Integrates with your existing workflows.", url: "https://jasper.ai", icon: "&#9997;", bg: "#7c3aed", tags: ["tag-paid", "Paid"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Grammarly", tagline: "AI writing assistant that lives everywhere", desc: "Beyond spell-check -- rewrites for clarity, tone, and engagement. Works in Gmail, Docs, Slack, everywhere you type. The most seamless AI writing upgrade.", url: "https://grammarly.com", icon: "&#128218;", bg: "#15803d", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Notion AI", tagline: "AI built into your workspace", desc: "Summarize notes, generate action items, draft docs, fill databases -- all inside Notion where you already work. No context-switching needed.", url: "https://notion.so", icon: "&#128221;", bg: "#000", tags: ["tag-paid", "Paid add-on"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  images: {
+    title: "Create Images or Designs",
+    subtitle: "Generate visuals from text descriptions. No design skills needed.",
+    tools: [
+      { name: "Midjourney", tagline: "The gold standard for AI image generation", desc: "Produces the most aesthetically polished images. Photorealism, illustration, concept art -- all exceptional. Runs through Discord or their web app.", url: "https://midjourney.com", icon: "&#127912;", bg: "#0ea5e9", tags: ["tag-paid", "Paid"], t2: ["tag-beginner", "Beginner"] },
+      { name: "DALL-E 3", tagline: "Text-to-image built into ChatGPT", desc: "OpenAI's image generator, integrated directly into ChatGPT. Describe what you want, iterate in conversation. Best for quick generation without leaving your chat.", url: "https://chat.openai.com", icon: "&#128248;", bg: "#10a37f", tags: ["tag-paid", "ChatGPT Plus"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Adobe Firefly", tagline: "AI image generation with commercial licensing", desc: "Safe for commercial use -- trained only on licensed content. Built into Photoshop and Illustrator. Generative fill, expand, and recolor in your existing workflows.", url: "https://firefly.adobe.com", icon: "&#128293;", bg: "#eb1000", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Ideogram", tagline: "Best AI text rendering in images", desc: "The only AI image tool that reliably renders text in images (logos, signs, posters). Also great for general image generation with a generous free tier.", url: "https://ideogram.ai", icon: "&#127912;", bg: "#6d28d9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Stable Diffusion", tagline: "Open-source image generation you can run locally", desc: "Full control over the model. Run on your own GPU, fine-tune on your data, no content restrictions. Steeper learning curve but maximum flexibility.", url: "https://stability.ai", icon: "&#128153;", bg: "#7c3aed", tags: ["tag-open-source", "Open Source"], t2: ["tag-advanced", "Advanced"] },
+    ]
+  },
+  video: {
+    title: "Create Videos",
+    subtitle: "Generate, edit, and enhance video content with AI.",
+    tools: [
+      { name: "Runway", tagline: "Industry-leading AI video generation and editing", desc: "Gen-3 Alpha produces cinematic AI video from text or images. Also offers background removal, motion tracking, inpainting. Used by Hollywood studios.", url: "https://runwayml.com", icon: "&#127909;", bg: "#0ea5e9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Sora", tagline: "OpenAI's text-to-video model", desc: "Generate realistic video up to 60 seconds from text descriptions. Strong understanding of physics and motion. Available through ChatGPT Pro.", url: "https://sora.com", icon: "&#127916;", bg: "#10a37f", tags: ["tag-paid", "Paid"], t2: ["tag-beginner", "Beginner"] },
+      { name: "HeyGen", tagline: "AI avatar videos for presentations and marketing", desc: "Create talking-head videos with realistic AI avatars. Upload a script, pick an avatar, get a polished video. 100+ languages. Great for training content and social.", url: "https://heygen.com", icon: "&#128100;", bg: "#6d28d9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Kling", tagline: "High-quality AI video from China's Kuaishou", desc: "Competitive with Runway and Sora on quality. Strong motion and physics understanding. Free tier is generous. Rapidly improving.", url: "https://klingai.com", icon: "&#127902;", bg: "#dc2626", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Descript", tagline: "Edit video like editing a document", desc: "Transcribes your video, then lets you edit by deleting/moving text. AI removes filler words, generates eye contact, and creates clips. Best for podcasters and creators.", url: "https://descript.com", icon: "&#9999;", bg: "#18181b", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  data: {
+    title: "Analyze Data",
+    subtitle: "Upload your data, ask questions in English, get insights and charts.",
+    tools: [
+      { name: "Julius AI", tagline: "Upload a spreadsheet, ask anything", desc: "The simplest way to analyze data with AI. Drag and drop a CSV or Excel file, ask questions like 'what's the trend in Q4 sales?' and get charts and answers.", url: "https://julius.ai", icon: "&#128202;", bg: "#6d28d9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "ChatGPT Code Interpreter", tagline: "Python-powered data analysis in ChatGPT", desc: "Upload files, ChatGPT writes and runs Python code to analyze them. Creates visualizations, statistical analysis, and cleaned datasets. No coding needed on your end.", url: "https://chat.openai.com", icon: "&#128187;", bg: "#10a37f", tags: ["tag-paid", "ChatGPT Plus"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Google NotebookLM", tagline: "AI research assistant from Google", desc: "Upload documents, reports, or datasets. NotebookLM reads everything and lets you ask questions with cited sources. Can even generate podcast-style audio summaries.", url: "https://notebooklm.google.com", icon: "&#128214;", bg: "#4285f4", tags: ["tag-free", "Free"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Tableau AI", tagline: "Enterprise analytics with natural language queries", desc: "Ask questions about your data in plain English within Tableau. AI suggests visualizations and explains trends. Best for teams already using Tableau.", url: "https://tableau.com", icon: "&#128200;", bg: "#e97627", tags: ["tag-paid", "Paid"], t2: ["tag-intermediate", "Intermediate"] },
+    ]
+  },
+  code: {
+    title: "Code Faster",
+    subtitle: "AI pair programmers that autocomplete, debug, and generate code.",
+    tools: [
+      { name: "GitHub Copilot", tagline: "AI autocomplete in your editor", desc: "Tab-complete entire functions, generate tests, explain code. Works in VS Code, JetBrains, Neovim. Trained on billions of lines of code. The industry standard.", url: "https://github.com/features/copilot", icon: "&#128025;", bg: "#000", tags: ["tag-paid", "Paid"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Claude Code", tagline: "Autonomous coding agent in your terminal", desc: "Goes beyond autocomplete -- reads your entire codebase, plans changes across multiple files, runs tests, creates commits. Handles complex multi-step engineering tasks.", url: "https://claude.ai/code", icon: "&#129302;", bg: "#d97706", tags: ["tag-paid", "Paid"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "Cursor", tagline: "The AI-first code editor", desc: "Fork of VS Code with AI woven into every interaction. Cmd+K to edit code with instructions, chat about your project, apply diffs across files. Feels native.", url: "https://cursor.com", icon: "&#128187;", bg: "#18181b", tags: ["tag-free", "Free tier"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "Windsurf", tagline: "AI editor with deep codebase understanding", desc: "Codeium's editor. Indexes your entire repo for context-aware suggestions. Cascade feature handles multi-file changes. Strong free tier.", url: "https://codeium.com/windsurf", icon: "&#127940;", bg: "#09b6a2", tags: ["tag-free", "Free tier"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "Codeium", tagline: "Free AI code autocomplete", desc: "Free alternative to GitHub Copilot. Autocomplete, chat, search across 70+ languages. Works in all major editors. Best free option for individual developers.", url: "https://codeium.com", icon: "&#9889;", bg: "#09b6a2", tags: ["tag-free", "Free"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  research: {
+    title: "Research Anything",
+    subtitle: "AI-powered search that understands context and cites sources.",
+    tools: [
+      { name: "Perplexity", tagline: "AI search engine with real-time sources", desc: "Ask any question, get a synthesized answer with numbered citations. Like having a research assistant that reads the entire internet. Pro mode uses the latest AI models.", url: "https://perplexity.ai", icon: "&#128270;", bg: "#1a73e8", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Google NotebookLM", tagline: "Upload sources, ask questions with citations", desc: "Upload your own PDFs, docs, websites, or YouTube links. AI reads everything and answers questions citing your specific sources. Can generate Audio Overview podcasts.", url: "https://notebooklm.google.com", icon: "&#128214;", bg: "#4285f4", tags: ["tag-free", "Free"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Elicit", tagline: "AI research assistant for academic papers", desc: "Search 200M+ academic papers. AI reads papers for you, extracts key findings, compares across studies. Built for literature reviews and systematic research.", url: "https://elicit.com", icon: "&#128218;", bg: "#6d28d9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Consensus", tagline: "AI-powered search for scientific evidence", desc: "Ask a yes/no research question ('Does creatine improve strength?') and Consensus surveys the scientific literature, showing what percentage of studies agree.", url: "https://consensus.app", icon: "&#128300;", bg: "#0ea5e9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  agents: {
+    title: "Build AI Agents",
+    subtitle: "Create autonomous programs that can browse, code, email, and complete multi-step tasks.",
+    tools: [
+      { name: "Claude Agent SDK", tagline: "Build production AI agents with Anthropic's tools", desc: "Official SDK for building agents that can use tools, browse the web, write code, and interact with APIs. Production-grade with guardrails built in.", url: "https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk", icon: "&#129302;", bg: "#d97706", tags: ["tag-free", "Free to build"], t2: ["tag-advanced", "Advanced"] },
+      { name: "OpenAI Assistants API", tagline: "Build agents with GPT models", desc: "Create assistants with instructions, tools (code interpreter, file search, function calling), and persistent threads. Managed infrastructure -- you focus on the logic.", url: "https://platform.openai.com/docs/assistants", icon: "&#128172;", bg: "#10a37f", tags: ["tag-paid", "Usage-based"], t2: ["tag-advanced", "Advanced"] },
+      { name: "LangChain", tagline: "The most popular framework for AI applications", desc: "Open-source Python/JS framework for chaining LLM calls with tools, memory, and retrieval. Huge ecosystem of integrations. The default choice for custom AI apps.", url: "https://langchain.com", icon: "&#128279;", bg: "#1a365d", tags: ["tag-open-source", "Open Source"], t2: ["tag-advanced", "Advanced"] },
+      { name: "CrewAI", tagline: "Multi-agent orchestration made simple", desc: "Define multiple AI agents with different roles (researcher, writer, reviewer) and have them collaborate on tasks. Simpler than LangChain for multi-agent workflows.", url: "https://crewai.com", icon: "&#129309;", bg: "#dc2626", tags: ["tag-open-source", "Open Source"], t2: ["tag-intermediate", "Intermediate"] },
+      { name: "n8n AI Agents", tagline: "Visual agent builder with workflow automation", desc: "Combine n8n's workflow automation with AI agents. Build agents that can trigger workflows, call APIs, and process data -- all through a visual interface.", url: "https://n8n.io", icon: "&#9881;", bg: "#ea4b71", tags: ["tag-open-source", "Open Source"], t2: ["tag-intermediate", "Intermediate"] },
+    ]
+  },
+  audio: {
+    title: "Create Music or Audio",
+    subtitle: "Generate songs, clone voices, and produce audio from text.",
+    tools: [
+      { name: "Suno", tagline: "Generate full songs from a text prompt", desc: "Type a description ('upbeat jazz about Monday mornings') and get a full song with vocals, instruments, and lyrics in seconds. Shockingly good quality.", url: "https://suno.com", icon: "&#127925;", bg: "#000", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "ElevenLabs", tagline: "The most realistic AI voice generation", desc: "Text-to-speech that sounds human. Clone any voice from a 30-second sample. 30+ languages. Used for audiobooks, podcasts, dubbing, and voice assistants.", url: "https://elevenlabs.io", icon: "&#127908;", bg: "#18181b", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Udio", tagline: "AI music generation with fine-grained control", desc: "Competitor to Suno with more control over style, structure, and lyrics. Strong at longer compositions and genre-specific output.", url: "https://udio.com", icon: "&#127911;", bg: "#6d28d9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Descript", tagline: "Edit audio like editing a document", desc: "AI transcription, filler word removal, voice cloning for corrections ('Overdub'), and studio-quality enhancement. The all-in-one podcast production tool.", url: "https://descript.com", icon: "&#9999;", bg: "#18181b", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  learn: {
+    title: "Learn Something New",
+    subtitle: "AI tutors that adapt to you. Upload anything and learn through conversation.",
+    tools: [
+      { name: "Google NotebookLM", tagline: "Turn any material into an interactive study session", desc: "Upload lecture notes, textbooks, or articles. Ask questions and get answers grounded in your sources. The Audio Overview feature generates a podcast-style discussion of your material.", url: "https://notebooklm.google.com", icon: "&#128214;", bg: "#4285f4", tags: ["tag-free", "Free"], t2: ["tag-beginner", "Beginner"] },
+      { name: "ChatGPT", tagline: "Universal AI tutor for any subject", desc: "Explain concepts at any level, generate practice problems, quiz you, and adapt explanations when you're stuck. Works for math, science, history, coding -- anything.", url: "https://chat.openai.com", icon: "&#128172;", bg: "#10a37f", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Khan Academy (Khanmigo)", tagline: "AI tutor built into structured courses", desc: "Anthropic-powered tutor that guides you through Khan Academy's courses. Doesn't just give answers -- asks Socratic questions to help you understand.", url: "https://khanacademy.org/khan-labs", icon: "&#127891;", bg: "#14b8a6", tags: ["tag-free", "Free"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Duolingo Max", tagline: "AI-powered language learning conversations", desc: "Practice conversations with an AI that adapts to your level. Explains grammar mistakes, roleplays real scenarios. The best way to practice a language without a human partner.", url: "https://duolingo.com", icon: "&#127757;", bg: "#58cc02", tags: ["tag-paid", "Paid tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  },
+  productivity: {
+    title: "Boost Daily Productivity",
+    subtitle: "AI for your inbox, calendar, meetings, and task management.",
+    tools: [
+      { name: "Gemini in Gmail/Docs", tagline: "AI assistant built into Google Workspace", desc: "Summarize email threads, draft replies, generate documents, create spreadsheet formulas. Works inside the tools you already use every day.", url: "https://workspace.google.com/solutions/ai", icon: "&#9889;", bg: "#4285f4", tags: ["tag-paid", "Workspace plan"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Granola", tagline: "AI meeting notes that actually work", desc: "Joins your meetings, listens, and produces structured notes with action items. Works with Zoom, Meet, and Teams. You just talk -- Granola does the rest.", url: "https://granola.ai", icon: "&#128221;", bg: "#18181b", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Reclaim.ai", tagline: "AI calendar that protects your focus time", desc: "Automatically schedules tasks, habits, and meetings around your priorities. Defends focus blocks. Syncs with your existing calendar.", url: "https://reclaim.ai", icon: "&#128197;", bg: "#0ea5e9", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Superhuman", tagline: "The fastest email client with AI", desc: "AI writes replies in your voice, summarizes threads, auto-labels and prioritizes. Keyboard-driven UI designed for speed. Popular with founders and execs.", url: "https://superhuman.com", icon: "&#128232;", bg: "#6d28d9", tags: ["tag-paid", "Paid"], t2: ["tag-beginner", "Beginner"] },
+      { name: "Raycast AI", tagline: "AI-powered launcher for Mac power users", desc: "Spotlight replacement with built-in AI. Summarize, translate, write, and execute commands without leaving your keyboard. Extensions for every tool.", url: "https://raycast.com", icon: "&#128640;", bg: "#f97316", tags: ["tag-free", "Free tier"], t2: ["tag-beginner", "Beginner"] },
+    ]
+  }
+};
+
+function showTools(goalKey) {
+  const goal = TOOLS[goalKey];
+  const goalsEl = document.getElementById('goals');
+  const resultsEl = document.getElementById('results');
+
+  let html = `
+    <button class="back-btn" onclick="showGoals()">&#8592; Back to all goals</button>
+    <div class="results-header">
+      <h2>${goal.title}</h2>
+      <p>${goal.subtitle}</p>
+    </div>
+    <div class="tool-list">
+  `;
+
+  goal.tools.forEach(t => {
+    html += `
+      <div class="tool-card">
+        <div class="tool-icon" style="background:${t.bg};">${t.icon}</div>
+        <div class="tool-info">
+          <h4>${t.name}</h4>
+          <div class="tool-tagline">${t.tagline}</div>
+          <div class="tool-desc">${t.desc}</div>
+          <div class="tool-meta">
+            <span class="tool-tag ${t.tags[0]}">${t.tags[1]}</span>
+            <span class="tool-tag ${t.t2[0]}">${t.t2[1]}</span>
+          </div>
+          <a class="try-btn" href="${t.url}" target="_blank" rel="noopener">Try ${t.name} &rarr;</a>
+        </div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  resultsEl.innerHTML = html;
+
+  goalsEl.style.display = 'none';
+  resultsEl.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showGoals() {
+  document.getElementById('goals').style.display = '';
+  document.getElementById('results').classList.remove('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
