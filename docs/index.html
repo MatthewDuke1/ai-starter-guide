@@ -63,9 +63,20 @@
     /* Tool Results */
     .results { padding: 0 0 60px; display: none; }
     .results.active { display: block; }
-    .results-header { margin-bottom: 24px; }
+    .results-header { margin-bottom: 16px; }
     .results-header h2 { font-size: 28px; font-weight: 700; }
     .results-header p { font-size: 15px; color: #71717a; margin-top: 4px; }
+
+    .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+    .filter-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #18181b; border: 1px solid #27272a; color: #a1a1aa;
+      padding: 7px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .filter-btn:hover { border-color: #a78bfa; color: #e4e4e7; }
+    .filter-btn.active { background: rgba(168,85,247,0.15); border-color: #a78bfa; color: #c4b5fd; font-weight: 600; }
+    .filter-label { font-size: 12px; color: #52525b; margin-right: 4px; }
 
     .tool-list { display: flex; flex-direction: column; gap: 16px; }
     .tool-card {
@@ -336,6 +347,14 @@ function showTools(goalKey, altSet) {
       <h2>${goal.title}</h2>
       <p>${goal.subtitle}</p>
     </div>
+    <div class="filter-bar">
+      <span class="filter-label">Filter:</span>
+      <button class="filter-btn active" onclick="applyFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="applyFilter('free', this)">Free Tier</button>
+      <button class="filter-btn" onclick="applyFilter('open-source', this)">Open Source</button>
+      <button class="filter-btn" onclick="applyFilter('beginner', this)">Beginner</button>
+      <button class="filter-btn" onclick="applyFilter('intermediate', this)">Intermediate</button>
+    </div>
     <div class="tool-list" id="tool-list">
   `;
 
@@ -346,8 +365,10 @@ function showTools(goalKey, altSet) {
     const diffHtml = t.diff ? `<div class="diff-box"><strong>What makes it stand out:</strong><ul>${t.diff.map(d => '<li>' + d + '</li>').join('')}</ul></div>` : '';
     const hasExtra = t.article || t.promo;
     const hasDiff = t.diff && t.diff.length > 0;
+    const pricing = t.tags[0].replace('tag-', '');
+    const level = t.t2[0].replace('tag-', '');
     html += `
-      <div class="tool-card">
+      <div class="tool-card" data-pricing="${pricing}" data-level="${level}">
         <div class="tool-icon" style="background:${t.bg};">${t.icon}</div>
         <div class="tool-info">
           <h4>${t.name}</h4>
@@ -401,6 +422,43 @@ function refreshTools(goalKey) {
   const totalSets = 1 + (alts ? alts.length : 0);
   altIndex[goalKey] = ((altIndex[goalKey] || 0) + 1) % totalSets;
   showTools(goalKey, altIndex[goalKey]);
+}
+
+function applyFilter(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const cards = document.querySelectorAll('.tool-card');
+  let visible = 0;
+
+  cards.forEach(card => {
+    const pricing = card.dataset.pricing;
+    const level = card.dataset.level;
+    let show = false;
+
+    if (filter === 'all') show = true;
+    else if (filter === 'free') show = (pricing === 'free');
+    else if (filter === 'open-source') show = (pricing === 'open-source');
+    else if (filter === 'beginner') show = (level === 'beginner');
+    else if (filter === 'intermediate') show = (level === 'intermediate');
+
+    card.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  let msg = document.getElementById('no-filter-msg');
+  if (visible === 0) {
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.id = 'no-filter-msg';
+      msg.style.cssText = 'text-align:center;padding:40px 0;color:#52525b;font-size:14px;';
+      document.getElementById('tool-list').appendChild(msg);
+    }
+    msg.textContent = 'No tools match this filter. Try "All" or click Refresh for more options.';
+    msg.style.display = '';
+  } else if (msg) {
+    msg.style.display = 'none';
+  }
 }
 
 function toggleArticle(uid, btn) {
